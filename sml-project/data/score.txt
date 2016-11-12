@@ -1,0 +1,12 @@
+Neighborhood
+ExterQual
+ExterCond
+MSZoning
+Condition1
+Condition2
+KitchenQual
+GarageQual
+GarageCond
+FireplaceQu
+HeatingQC
+HouseStyle
