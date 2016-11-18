@@ -157,6 +157,9 @@ def readData(isTrainingData):
 
     n=len(header)
 
+    if not isTrainingData:
+        n=n-1
+
     count=0
 
     for row in reader:
@@ -188,8 +191,10 @@ def computeContinuousFeatures(isTrainingData):
         featureToValuesMapping=featureToValuesMappingTest
 
     for key in featureToValuesMapping:
+
         if key not in continuousFeatures:
             continue
+        print(key)
         values=featureToValuesMapping[key]
         newValues=[]
 
@@ -264,7 +269,7 @@ def writeScoredDataToFile(isTrainData):
         featureToValuesMapping=featureToValuesMappingTest
 
     if sys.version_info[0] > 3:
-
+        print ('Above 3')
         file=open(filePath,'w',newline='')
     else:
         file=open(filePath,'w')
@@ -289,7 +294,7 @@ def writeScoredDataToFile(isTrainData):
         for j in range(1,headers):
             values=featureToValuesMapping[header[j]]
             line.append(values[i])
-        print(line)
+#        print(line)
         writer.writerow(line)
 
     file.close()
