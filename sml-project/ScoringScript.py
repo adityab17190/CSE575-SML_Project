@@ -292,9 +292,9 @@ def writeScoredDataToFile(isTrainData):
         line=[]
         line.append(id)
         for j in range(1,headers):
+            print(header[j])
             values=featureToValuesMapping[header[j]]
             line.append(values[i])
-#        print(line)
         writer.writerow(line)
 
     file.close()
