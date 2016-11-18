@@ -8,11 +8,16 @@ from sklearn import linear_model
 
 import numpy
 
-trainDataFile='./data/train_scored.csv'
+trainDataFile='./data/PCA_train_scored.csv'
+# trainDataFile='./data/train_scored.csv'
 
-testDataFile='./data/test_scored.csv'
+# testDataFile='./data/test_scored.csv'
+testDataFile='./data/PCA_test_scored.csv'
 
-featuresToIncludeFile='./data/includedFeatures.txt'
+# featuresToIncludeFile='./data/includedFeatures.txt'
+featuresToIncludeFile='./data/PCA_includedFeatures.txt'
+
+yFile = './data/train_scored_y.csv';
 
 mapping=dict()
 
@@ -103,7 +108,16 @@ def readFeaturesToInclude():
 
 def genrateTrainAndTestData(trainDataLen,testDataLen):
 
-    y_train=featureToValuesMappingTrain['SalePrice']
+    # y_train=featureToValuesMappingTrain['SalePrice']
+
+    file=open(yFile)
+    reader=csv.reader(file)
+    next(reader)
+    y_train = []
+
+    for row in reader:
+        price = float(row[0])
+        y_train.append(price)
 
     x_train=getFeatures(featureToValuesMappingTrain,trainDataLen)
 
