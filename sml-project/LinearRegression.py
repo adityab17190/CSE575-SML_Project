@@ -1,45 +1,25 @@
 __author__ = 'aditya'
+
 import csv
+
+from sklearn import linear_model
 
 import numpy
 
-import math
+trainDataFile='./data/train_scored.csv'
 
-from sklearn import  linear_model
+testDataFile='./data/test_scored.csv'
 
-import ScoringScript
+featuresToIncludeFile='./data/includedFeatures.txt'
 
-trainDataFile='./data/train.csv'
+mapping=dict()
 
-testDateFile='./data/test.csv'
-
-featuresToIncludeFile='./data/include.csv'
-
-featuresToScoreFile='./data/score.txt'
-
-
-
-mapping=dict() #Maps Features to their respective column numbers
-
-featuresToInclude=[]
-
-columnsToInclude=[]
-
-featureToTypeMapping=dict()
-
-featuresToScore=[]
-
-featureToValuesMappingTraining=dict()
+featureToValuesMappingTrain=dict()
 
 featureToValuesMappingTest=dict()
 
-totalAreaTrain=[]
+featuresToInclude=[]
 
-totalAreaTest=[]
-
-salePriceTrain=[]
-
-perSqFootTrain=[]
 
 def mapColumnNamesToColumnNumbers():
 
@@ -57,203 +37,171 @@ def mapColumnNamesToColumnNumbers():
 
       for i in range(0,n):
         mapping[header[i]]=i
+
         print(header[i]+":"+str(i))
 
       file.close()
 
+      return header
+
+
+def readData(isTrainingData):
+
+    if isTrainingData:
+        featureToValuesMapping=featureToValuesMappingTrain
+        file=open(trainDataFile)
+
+    else:
+        featureToValuesMapping=featureToValuesMappingTest
+        file=open(testDataFile)
+
+
+    reader=csv.reader(file)
+
+    header=next(reader) #Skipping header
+
+    n=len(header)
+
+    if not isTrainingData:
+        n=n-1
+
+    count=0
+
+    for row in reader:
+
+        count=count+1
+
+        for i in range(1,n):
+
+            feature=header[i]
+
+            values=featureToValuesMapping.get(feature,None)
+
+            if values is None:
+                values=[]
+
+            values.append(float(row[i]))
+
+            featureToValuesMapping[feature]=values
+
+    return count
+
+
 def readFeaturesToInclude():
-
-
-    print('.........................................................................')
-
-    print('Reading Features to include and their types')
 
     file=open(featuresToIncludeFile)
 
-    reader=csv.reader(file)
-
-    next(reader) #Skipping first line
-
-    for line in reader:
-        featuresToInclude.append(line[0])
-        featureToTypeMapping[line[0]]=line[1]
-        columnsToInclude.append(mapping[line[0]])
-        print(line[0]+":"+line[1]+':'+str(mapping[line[0]]))
-
-    file.close()
-
-def readFeaturesToScore():
-
-
-    print('.........................................................................')
-
-    print('Reading Features to Score..')
-
-    file=open(featuresToScoreFile)
-
     for feature in file:
+
         if feature.endswith('\n'):
             feature=feature[:-1]
-        featuresToScore.append(feature)
         print(feature)
-
-    file.close()
-
-def readData(isTrainData):
+        featuresToInclude.append(feature)
 
 
-    print('.........................................................................')
+def genrateTrainAndTestData(trainDataLen,testDataLen):
 
-    if isTrainData:
+    y_train=featureToValuesMappingTrain['SalePrice']
 
-        print('Reading Train Data')
-    else:
-        print('Reading Test Data')
+    x_train=getFeatures(featureToValuesMappingTrain,trainDataLen)
 
-    path=trainDataFile
+    x_test=getFeatures(featureToValuesMappingTest,testDataLen)
 
-    if not isTrainData:
-        path=testDateFile
-
-    print(path)
+    return x_train,y_train,x_test
 
 
-    file=open(path)
+def performLinearRegression(trainDataLen,testDataLen):
 
-    reader=csv.reader(file)
+    x_train,y_train,x_test=genrateTrainAndTestData(trainDataLen,testDataLen)
 
-    header=next(reader)
+    trainingData=x_train[:-140]
 
-    print(header)
+    trainingY=y_train[:-140]
 
-    print(len(header))
+    validationData=x_train[-140:]
 
-    featureToValuesMapping=featureToValuesMappingTraining
-
-    if not isTrainData:
-        featureToValuesMapping=featureToValuesMappingTest
-
-    for row in reader:
-        for i in columnsToInclude:
-           # print(i)
-            feature=header[i]
-            values=featureToValuesMapping.get(feature,None)
-            if values is None:
-                values=[]
-            values.append(row[i])
-            featureToValuesMapping[feature]=values
-
-        if isTrainData:
-            salePriceTrain.append(float(row[len(row)-2]))
-
-    file.close()
-
-def preProcessData(featureToValuesMapping):
-
-    print('.........................................................................')
-
-    print('Preprocessing data')
-
-    for feature in featureToValuesMapping:
-
-        datatype=featureToTypeMapping[feature]
-
-        print(feature)
-
-        if datatype =='String':
-            continue
-        else:
-            values=featureToValuesMapping[feature]
-            processedValues=[float(x) for x in values ]
-            featureToValuesMapping[feature]=processedValues
-
-        print(featureToValuesMapping[feature])
-
-def computePerSqFootPrice():
-
-
-    print('.........................................................................')
-
-    print('Computing per square foot price..')
-
-    totalArea=featureToValuesMappingTraining['TotalArea']
-
-    n=len(totalArea)
-
-    for i in range(0,n):
-        perSqFootTrain.append(salePriceTrain[i]/totalArea[i])
-
-    print(perSqFootTrain)
-
-def getScoredValues(isTrainingData):
-
-    if isTrainingData:
-
-        featureToValuesMapping=featureToValuesMappingTraining
-    else:
-        featureToValuesMapping=featureToValuesMappingTest
-
-    for feature in featuresToScore:
-    #    print(feature)
-        scoredValues=ScoringScript.computeScoredData(featureToValuesMapping[feature],perSqFootTrain)
-        featureToValuesMapping[feature]=scoredValues
-    #    print(scoredValues)
-
-
-def performLinearRegression():
-
-    x=[]
-
-    n=len(salePriceTrain)
-
-    for i in range(0,n):
-        l=[]
-        for feature in featuresToInclude:
-            values=featureToValuesMappingTraining[feature]
-            l.append(values[i])
-        x.append(tuple(l))
-
-    #print(x)
-
-    y=salePriceTrain
+    validationY=y_train[-140:]
 
     regr=linear_model.LinearRegression()
 
-    x_train=x[:-140]
-
-    x_test=x[-140:]
-
-    y_train=y[:-140]
-
-    y_test=y[-140:]
-
-    regr.fit(x_train,y_train)
+    regr.fit(trainingData,trainingY)
 
     print('Coefficients')
 
     print(regr.coef_)
 
+    coefficients=regr.coef_
+
     print("Mean squared error: %.2f"
-      % numpy.mean((regr.predict(x_test) - y_test) ** 2))
+      % numpy.mean((regr.predict(validationData) - validationY) ** 2))
 # Explained variance score: 1 is perfect prediction
-    print('Variance score: %.2f' % regr.score(x_test, y_test))
+    print('Variance score: %.2f' % regr.score(validationData, validationY))
+
+    predictedSalePrices=predict(coefficients,x_test)
+
+    writeOutput(predictedSalePrices)
 
 
+def predict(coefficients,testData):
+
+    noOfFeatures=len(coefficients)
+
+    n=len(testData)
+
+    predicted=[]
+
+    for i in range(0,n):
+        y=0
+        l=list(testData[i])
+        for j in range(0,noOfFeatures):
+            y=y+coefficients[j]*l[j]
+        predicted.append(y)
+
+    return predicted
+
+
+def writeOutput(predictedValues):
+
+    n=len(predictedValues)
+
+    id=1460
+
+    filePath='./data/output.csv'
+
+    file=open(filePath,'w',newline='')
+
+    writer=csv.writer(file)
+
+    header=['Id','SalePrice']
+
+    writer.writerow(header)
+
+    for i in range(0,n):
+        id=id+1
+        line=[]
+        line.append(id)
+        line.append(predictedValues[i])
+        writer.writerow(line)
+
+    file.close()
+
+
+def getFeatures(featureToValuesMapping, dataLen):
+
+    x=[]
+
+    for i in range(0,dataLen):
+        l=[]
+        for feature in featuresToInclude:
+            values=featureToValuesMapping[feature]
+            l.append(values[i])
+
+        x.append(l)
+    return  x
 
 if __name__ == '__main__':
     mapColumnNamesToColumnNumbers()
+    trainDataLen=readData(True)
+    testDataLen=readData(False)
     readFeaturesToInclude()
-    readFeaturesToScore()
-    readData(True)
-    readData(False)
-    preProcessData(featureToValuesMappingTraining)
-#    preProcessData(featureToValuesMappingTest)
-    if 'TotalArea' in featuresToInclude:
-        computePerSqFootPrice()
-        getScoredValues(True)
-    #getScoredValues(False)
-
-    performLinearRegression()
-    exit(0)
-
-
+    performLinearRegression(trainDataLen,testDataLen)
