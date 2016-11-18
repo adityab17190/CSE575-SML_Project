@@ -2,6 +2,8 @@ __author__ = 'aditya'
 
 import csv
 
+import sys
+
 from sklearn import linear_model
 
 import numpy
@@ -168,7 +170,11 @@ def writeOutput(predictedValues):
 
     filePath='./data/output.csv'
 
-    file=open(filePath,'w',newline='')
+    if sys.version_info[0] > 3:
+
+        file=open(filePath,'w')
+    else:
+        file=open(filePath,'w',newline='')
 
     writer=csv.writer(file)
 
