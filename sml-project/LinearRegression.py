@@ -172,9 +172,9 @@ def writeOutput(predictedValues):
 
     if sys.version_info[0] > 3:
 
-        file=open(filePath,'w')
-    else:
         file=open(filePath,'w',newline='')
+    else:
+        file=open(filePath,'w')
 
     writer=csv.writer(file)
 
