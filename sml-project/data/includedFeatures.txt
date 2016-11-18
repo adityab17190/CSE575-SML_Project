@@ -1,0 +1,8 @@
+Neighborhood
+TotalArea
+BedroomAbvGr
+MSZoning
+OverallQual
+OverallCond
+ExterQual
+HeatingQC
