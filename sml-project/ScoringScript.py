@@ -1,8 +1,7 @@
 __author__ = 'aditya'
 import csv
 
-
-
+import sys
 
 mapping=dict() #Maps Features to their respective column numbers
 
@@ -264,7 +263,11 @@ def writeScoredDataToFile(isTrainData):
         n=testDataLen
         featureToValuesMapping=featureToValuesMappingTest
 
-    file=open(filePath,'w',newline='')
+    if sys.version_info[0] > 3:
+
+        file=open(filePath,'w')
+    else:
+        file=open(filePath,'w',newline='')
 
     writer=csv.writer(file)
 
