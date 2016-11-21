@@ -3,7 +3,7 @@ function [ ] = writeToFile( data, outputFileName )
 %   Author = 'Tanmay Patil'
 
     fid=fopen(outputFileName,'wt');
-    [rows, cols] = size(data);
+    [rows, ~] = size(data);
     for i=1:rows
         fprintf(fid,'%s,',data{i,1:end-1});
         fprintf(fid,'%s\n',data{i,end});

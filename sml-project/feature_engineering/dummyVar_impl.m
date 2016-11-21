@@ -9,8 +9,8 @@ function [ finalData ] = dummyVar_impl( data, columnNumber )
     column = nominal(column);
     newColumns = dummyvar(column);
     
-    [rows cols] = size(data);
-    [newRows newCols] = size(newColumns);
+    [~, cols] = size(data);
+    [~, newCols] = size(newColumns);
     newData = {};
     newHeaders = {};
     counter = 1;

@@ -1,4 +1,4 @@
-function [ trainData testData ] = splitData( data, rowsTrain, rowsTest )
+function [ trainData, testData ] = splitData( data, rowsTrain, rowsTest )
 %splitData Summary of this function goes here
 %   Author = 'Tanmay Patil'
 

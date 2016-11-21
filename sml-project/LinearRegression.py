@@ -13,8 +13,8 @@ import numpy
 # featuresToIncludeFile='./data/PCA_includedFeatures.txt'
 
 
-trainDataFile='./data/tanmay_test/train_new_scored.csv'
-testDataFile='./data/tanmay_test/test_new_scored.csv'
+trainDataFile='./data/feature_engineering_test/train_new_scored.csv'
+testDataFile='./data/feature_engineering_test/test_new_scored.csv'
 featuresToIncludeFile='./data/includedFeatures.txt'
 
 yFile = './data/train_scored_y.csv';
