@@ -8,14 +8,14 @@ from sklearn import linear_model
 
 import numpy
 
-trainDataFile='./data/PCA_train_scored.csv'
-# trainDataFile='./data/train_scored.csv'
+# trainDataFile='./data/PCA_train_scored.csv'
+# testDataFile='./data/PCA_test_scored.csv'
+# featuresToIncludeFile='./data/PCA_includedFeatures.txt'
 
-# testDataFile='./data/test_scored.csv'
-testDataFile='./data/PCA_test_scored.csv'
 
-# featuresToIncludeFile='./data/includedFeatures.txt'
-featuresToIncludeFile='./data/PCA_includedFeatures.txt'
+trainDataFile='./data/tanmay_test/train_new_scored.csv'
+testDataFile='./data/tanmay_test/test_new_scored.csv'
+featuresToIncludeFile='./data/includedFeatures.txt'
 
 yFile = './data/train_scored_y.csv';
 

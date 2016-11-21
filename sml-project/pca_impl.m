@@ -10,11 +10,11 @@ function [ ] = pca_impl( inputFileName, outputFileName )
     X(:,originalP) = [];
     X(:,1) = [];
     
-%     normX = normc(X);
+%     X = normc(X);
     
     [coeff, score] = pca(X);
     
-    reducedMatrix = X*coeff;
+    reducedMatrix = X * coeff(:, 1:50);
     newData = [originalX(:,1) reducedMatrix];
     
     [reducedM, reducedP] = size(newData); % reduced m & p
