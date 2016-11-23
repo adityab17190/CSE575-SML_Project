@@ -2,10 +2,18 @@ function [ ] = preProcessing()
 %preProcessing Summary of this function goes here
 %   Author = 'Tanmay Patil'
 
-    inputFileNameTrain = 'data/train.csv';
-    inputFileNameTest = 'data/test.csv';
+    inputFileNameTrain = 'data/aditya_filtered_train.csv';
+    inputFileNameTest = 'data/aditya_filtered_test.csv';
     
     [data, rowsTrain, rowsTest] = mergeData(inputFileNameTrain, inputFileNameTest);
+    
+    removeColumnsArray = {'RoofStyle','RoofMatl','Exterior1st','Exterior2nd','MasVnrType','HouseStyle','Condition1','Condition2','LotFrontage','Alley','LotShape','LandContour','Utilities','LotConfig','LandSlope','BldgType','CentralAir','KitchenQual','Functional','FireplaceQu','GarageType','GarageFinish','GarageQual','GarageCond','PavedDrive','PoolQC','Fence','MiscFeature','SaleType','SaleCondition'};
+    
+    for t=1:length(removeColumnsArray)
+        currentVar = removeColumnsArray(t);
+        cColumnNumber = findColumnNumber(data, currentVar);
+        data = removeColumns(data, cColumnNumber);
+    end
     
     unique_a = [20,30,40,45,50,60,70,75,80,85,90,120,150,160,180,190];
     replace_a = {'A1','A2','A3','A4','A5','A6','A7','A8','A9','A10','A11','A12','A13','A14','A15','A16'};
@@ -22,27 +30,22 @@ function [ ] = preProcessing()
     cColumnNumber = findColumnNumber(data, 'OverallCond');
     data = convertToCategoricalVars(data, unique_c, replace_c, cColumnNumber);
     
-    allDummyVars = {'MSSubClass', 'Neighborhood', 'MSZoning', 'Street', 'Alley', 'LotShape', 'LandContour', 'Utilities', 'LotConfig', 'LandSlope', 'Condition1', 'Condition2', 'BldgType', 'HouseStyle', 'OverallQual', 'OverallCond', 'RoofStyle', 'RoofMatl', 'Exterior1st', 'Exterior2nd', 'MasVnrType', 'ExterQual', 'ExterCond', 'Foundation', 'BsmtQual', 'BsmtCond', 'BsmtExposure', 'BsmtFinType1', 'BsmtFinType2', 'CentralAir', 'Electrical', 'KitchenQual', 'Functional', 'FireplaceQu', 'GarageType', 'GarageFinish', 'GarageQual', 'GarageCond', 'PavedDrive', 'PoolQC', 'Fence', 'MiscFeature', 'SaleType', 'SaleCondition', 'Heating', 'HeatingQC'};
+    allDummyVars = {'MSSubClass', 'Neighborhood', 'MSZoning', 'Street', 'OverallQual', 'OverallCond', 'ExterQual', 'ExterCond', 'Foundation', 'BsmtQual', 'BsmtCond', 'BsmtExposure', 'BsmtFinType1', 'BsmtFinType2', 'Electrical', 'Heating', 'HeatingQC'};
     
     for t=1:length(allDummyVars)
         currentVar = allDummyVars(t);
+        disp('------');
+        disp(currentVar);
+        disp('------');
         bColumnNumber = findColumnNumber(data, currentVar);
         data = dummyVar_impl(data, bColumnNumber);
     end
     
-    removeColumnsArray = {'GarageYrBlt','YearBuilt','YearRemodAdd','MoSold','YrSold','LotFrontage','MasVnrArea'};
-    
-    for t=1:length(removeColumnsArray)
-        currentVar = removeColumnsArray(t);
-        cColumnNumber = findColumnNumber(data, currentVar);
-        data = removeColumns(data, cColumnNumber);
-    end
-    
     [trainData, testData] = splitData(data, rowsTrain, rowsTest);
+
     
-    
-    writeToFile(trainData, 'data/train_new_scored.csv');
-    writeToFile(testData, 'data/test_new_scored.csv');
+    writeToFile(trainData, 'data/filtered_train_new_scored.csv');
+    writeToFile(testData, 'data/filtered_test_new_scored.csv');
 
 end
 

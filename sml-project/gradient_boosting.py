@@ -74,17 +74,23 @@ def adaboost():
     # house_prices = genfromtxt(open('./data/train_scored_y.csv', 'r'), delimiter=',', dtype='f8')[1:]
     # test_data = genfromtxt(open('./data/PCA_test_scored.csv', 'r'), delimiter=',', dtype='f8')[1:]
 
-    train = genfromtxt(open('./data/train_scored.csv', 'r'), delimiter=',', dtype='f8')[1:]
+    train = genfromtxt(open('./data/feature_engineering_test/filtered_train_new_scored.csv', 'r'), delimiter=',', dtype='f8')[1:]
     house_prices = genfromtxt(open('./data/train_scored_y.csv', 'r'), delimiter=',', dtype='f8')[1:]
-    test_data = genfromtxt(open('./data/test_scored.csv', 'r'), delimiter=',', dtype='f8')[1:, 1:83]
+    test = genfromtxt(open('./data/feature_engineering_test/filtered_test_new_scored.csv', 'r'), delimiter=',', dtype='f8')[1:]
 
-    train_data = train[0:1320, 1:82]
+    # train_data = genfromtxt(open('./data/feature_engineering_test/PCA_train_new_scored.csv', 'r'), delimiter=',', dtype='f8')[1:1320,1:]
+    # house_prices_data = genfromtxt(open('./data/train_scored_y.csv', 'r'), delimiter=',', dtype='f8')[1:]
+    # test_data = genfromtxt(open('./data/feature_engineering_test/PCA_test_new_scored.csv', 'r'), delimiter=',', dtype='f8')[1:,1:]
+
+    totalCols = 100
+
+    train_data = train[:1320,1:]
     house_prices_data = house_prices[:1320]
 
-    validation_data = train[1320:, 1:82]
+    validation_data = train[1320:, 1:]
     house_prices_validation = house_prices[1320:]
 
-    #test_data = test[0:, 1:82]
+    test_data = test[0:, 1:]
 
     # Fit regression model
     regr_2 = AdaBoostRegressor(DecisionTreeRegressor(max_depth=12), n_estimators=500,
@@ -96,6 +102,7 @@ def adaboost():
     y_validation = regr_2.predict(validation_data)
     mse = mean_squared_error(house_prices_validation, y_validation)
     print("AdaBoost MSE: %.4f" % mse)
+    print("AdaBoost Variance: %.4f" % regr_2.score(validation_data, y_validation))
 
     # Predict
     y_2 = regr_2.predict(test_data)
@@ -107,20 +114,26 @@ def gradboost():
     # house_prices = genfromtxt(open('./data/train_scored_y.csv', 'r'), delimiter=',', dtype='f8')[1:]
     # test = genfromtxt(open('./data/PCA_test_scored.csv', 'r'), delimiter=',', dtype='f8')[1:]
 
-    train = genfromtxt(open('./data/train_scored.csv', 'r'), delimiter=',', dtype='f8')[1:]
+    train = genfromtxt(open('./data/feature_engineering_test/filtered_train_new_scored.csv', 'r'), delimiter=',', dtype='f8')[1:]
     house_prices = genfromtxt(open('./data/train_scored_y.csv', 'r'), delimiter=',', dtype='f8')[1:]
-    test_data = genfromtxt(open('./data/test_scored.csv', 'r'), delimiter=',', dtype='f8')[1:, 1:83]
+    test = genfromtxt(open('./data/feature_engineering_test/filtered_test_new_scored.csv', 'r'), delimiter=',', dtype='f8')[1:]
 
-    train_data = train[0:1320, 1:82]
+    # train_data = genfromtxt(open('./data/feature_engineering_test/PCA_train_new_scored.csv', 'r'), delimiter=',', dtype='f8')[1:1320,1:]
+    # house_prices_data = genfromtxt(open('./data/train_scored_y.csv', 'r'), delimiter=',', dtype='f8')[1:]
+    # test_data = genfromtxt(open('./data/feature_engineering_test/PCA_test_new_scored.csv', 'r'), delimiter=',', dtype='f8')[1:,1:]
+
+    totalCols = 100
+
+    train_data = train[:1320,1:]
     house_prices_data = house_prices[:1320]
 
-    validation_data = train[1320:, 1:82]
+    validation_data = train[1320:, 1:]
     house_prices_validation = house_prices[1320:]
 
-    # test_data = test[0:, 1:81]
+    test_data = test[0:, 1:]
 
     # Fit regression model
-    params = {'n_estimators': 500, 'max_depth': 12, 'learning_rate': 0.01, 'loss': 'ls'}
+    params = {'n_estimators': 500, 'max_depth': 4, 'learning_rate': 0.01, 'loss': 'ls'}
     regr_1 = ensemble.GradientBoostingRegressor(**params)
 
     # regr_1.fit(train_data, house_prices)
@@ -135,6 +148,6 @@ def gradboost():
     writeOutput(y_2, 'GradientBoost')
 
 if __name__ == '__main__':
-    adaboost()
+    # adaboost()
     print "------------------------------------------------"
-    #gradboost()
+    gradboost()
