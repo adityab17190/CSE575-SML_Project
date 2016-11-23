@@ -14,7 +14,7 @@ function [ ] = pca_impl( inputFileName, outputFileName )
     
     [coeff, score] = pca(X);
     
-    reducedMatrix = X * coeff(:, 1:50);
+    reducedMatrix = X * coeff;
     newData = [originalX(:,1) reducedMatrix];
     
     [reducedM, reducedP] = size(newData); % reduced m & p
