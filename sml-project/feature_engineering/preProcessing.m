@@ -7,7 +7,21 @@ function [ ] = preProcessing()
     
     [data, rowsTrain, rowsTest] = mergeData(inputFileNameTrain, inputFileNameTest);
     
-    removeColumnsArray = {'RoofStyle','RoofMatl','Exterior1st','Exterior2nd','MasVnrType','HouseStyle','Condition1','Condition2','LotFrontage','Alley','LotShape','LandContour','Utilities','LotConfig','LandSlope','BldgType','CentralAir','KitchenQual','Functional','FireplaceQu','GarageType','GarageFinish','GarageQual','GarageCond','PavedDrive','PoolQC','Fence','MiscFeature','SaleType','SaleCondition'};
+    
+    removeColumnsArray = { 'Street','Utilities','LotConfig','Condition2','RoofMatl', ...
+        'ExterCond','BsmtFinSF2','Heating','LowQualFinSF','BsmtHalfBath', ...
+        'ScreenPorch','PoolArea','PoolQC','MiscFeature','MiscVal', ...
+        'SaleType' };
+
+    allDummyVars = {'MSSubClass', 'Neighborhood', 'MSZoning', 'Street', ...
+        'OverallQual', 'OverallCond', 'ExterQual', 'ExterCond', 'Foundation', ...
+        'BsmtQual', 'BsmtCond', 'BsmtExposure', 'BsmtFinType1', 'BsmtFinType2', ...
+        'Electrical', 'Heating', 'HeatingQC', 'RoofStyle', 'Exterior1st', 'Exterior2nd', ...
+        'MasVnrType', 'RoofMatl', 'HouseStyle', 'Condition1', 'Condition2', 'Alley', ...
+        'LotShape', 'LandContour', 'Utilities', 'LotConfig', 'LandSlope', 'BldgType', ...
+        'CentralAir', 'KitchenQual', 'Functional', 'FireplaceQu', 'GarageType', ...
+        'GarageFinish', 'GarageQual', 'GarageCond', 'PavedDrive', 'PoolQC', 'Fence', ...
+        'MiscFeature', 'SaleType', 'SaleCondition'};
     
     for t=1:length(removeColumnsArray)
         currentVar = removeColumnsArray(t);
@@ -20,26 +34,31 @@ function [ ] = preProcessing()
     aColumnNumber = findColumnNumber(data, 'MSSubClass');
     data = convertToCategoricalVars(data, unique_a, replace_a, aColumnNumber);
     
-    unique_b = [10,9,8,7,6,5,4,3,2,1];
-    replace_b = {'B1','B2','B3','B4','B5','B6','B7','B8','B9','B10'};
-    bColumnNumber = findColumnNumber(data, 'OverallQual');
-    data = convertToCategoricalVars(data, unique_b, replace_b, bColumnNumber);
-    
-    unique_c = [10,9,8,7,6,5,4,3,2,1];
-    replace_c = {'C1','C2','C3','C4','C5','C6','C7','C8','C9','C10'};
-    cColumnNumber = findColumnNumber(data, 'OverallCond');
-    data = convertToCategoricalVars(data, unique_c, replace_c, cColumnNumber);
-    
-    allDummyVars = {'MSSubClass', 'Neighborhood', 'MSZoning', 'Street', 'OverallQual', 'OverallCond', 'ExterQual', 'ExterCond', 'Foundation', 'BsmtQual', 'BsmtCond', 'BsmtExposure', 'BsmtFinType1', 'BsmtFinType2', 'Electrical', 'Heating', 'HeatingQC'};
+%     unique_b = [10,9,8,7,6,5,4,3,2,1];
+%     replace_b = {'B1','B2','B3','B4','B5','B6','B7','B8','B9','B10'};
+%     bColumnNumber = findColumnNumber(data, 'OverallQual');
+%     data = convertToCategoricalVars(data, unique_b, replace_b, bColumnNumber);
+%     
+%     unique_c = [10,9,8,7,6,5,4,3,2,1];
+%     replace_c = {'C1','C2','C3','C4','C5','C6','C7','C8','C9','C10'};
+%     cColumnNumber = findColumnNumber(data, 'OverallCond');
+%     data = convertToCategoricalVars(data, unique_c, replace_c, cColumnNumber);
     
     for t=1:length(allDummyVars)
         currentVar = allDummyVars(t);
+        bColumnNumber = findColumnNumber(data, currentVar);
+        if(isempty(bColumnNumber))
+            continue;
+        end
         disp('------');
         disp(currentVar);
         disp('------');
-        bColumnNumber = findColumnNumber(data, currentVar);
         data = dummyVar_impl(data, bColumnNumber);
     end
+    
+%     data = normAllData(data);
+
+%     data = processSkewness(data);
     
     [trainData, testData] = splitData(data, rowsTrain, rowsTest);
 
