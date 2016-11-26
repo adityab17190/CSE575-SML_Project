@@ -9,6 +9,9 @@ from sklearn.ensemble import AdaBoostRegressor
 from sklearn import ensemble
 from numpy import genfromtxt, savetxt
 from sklearn.metrics import mean_squared_error
+import matplotlib.pyplot as plt
+from sklearn.ensemble import GradientBoostingRegressor
+from sklearn.grid_search import GridSearchCV
 
 # get the dataset
 # X : feature set get data from PCA_train_scored.csv
@@ -147,7 +150,39 @@ def gradboost():
     y_2 = regr_1.predict(test_data)
     writeOutput(y_2, 'GradientBoost')
 
+# def featureRelation():
+#     train = genfromtxt(open('./data/train_noSalesPrice.csv', 'r'), delimiter=',', dtype='f8')[1:]
+#     house_prices = genfromtxt(open('./data/train_scored_y.csv', 'r'), delimiter=',', dtype='f8')[1:]
+#
+#     traindat = pd.read_csv('./data/train_noSalesPrice.csv')
+#     train_data = train[:, 1:2]
+#     print train_data
+#     plt.plot(train_data, house_prices, 'ro')
+#     plt.show()
+
+def hyperparameter_tuning():
+    train = genfromtxt(open('./data/train_new.csv', 'r'), delimiter=',', dtype='f8')[1:]
+    house_prices = genfromtxt(open('./data/train_scored_y.csv', 'r'), delimiter=',', dtype='f8')[1:]
+    test_data = genfromtxt(open('./data/test_new.csv', 'r'), delimiter=',', dtype='f8')[1:]
+
+    train_data = train[:]
+    house_prices_data = house_prices[:]
+
+    params = {'max_depth': [3, 4, 6, 9, 12],
+              'learning_rate': [0.01, 0.08, 0.5, 1],
+              'min_samples_leaf': [3, 5, 9, 11],
+              'max_features': [3]
+              }
+    est = GradientBoostingRegressor(n_estimators=1000)
+    print est.get_params().keys()
+    gs_cv = GridSearchCV(est, params)
+    gs_cv.fit(train_data,house_prices_data)
+    print gs_cv.best_params_;
+
+
 if __name__ == '__main__':
     # adaboost()
     print "------------------------------------------------"
-    gradboost()
+    # gradboost()
+    hyperparameter_tuning()
+    #featureRelation()
