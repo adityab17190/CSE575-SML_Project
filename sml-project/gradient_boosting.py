@@ -12,6 +12,7 @@ from sklearn.metrics import mean_squared_error
 import matplotlib.pyplot as plt
 from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.grid_search import GridSearchCV
+import pandas as pd
 
 # get the dataset
 # X : feature set get data from PCA_train_scored.csv
@@ -150,15 +151,51 @@ def gradboost():
     y_2 = regr_1.predict(test_data)
     writeOutput(y_2, 'GradientBoost')
 
-# def featureRelation():
-#     train = genfromtxt(open('./data/train_noSalesPrice.csv', 'r'), delimiter=',', dtype='f8')[1:]
-#     house_prices = genfromtxt(open('./data/train_scored_y.csv', 'r'), delimiter=',', dtype='f8')[1:]
-#
-#     traindat = pd.read_csv('./data/train_noSalesPrice.csv')
-#     train_data = train[:, 1:2]
-#     print train_data
-#     plt.plot(train_data, house_prices, 'ro')
-#     plt.show()
+"""
+    Plots a feature against Sample price. Save this plot as <feature_name.jpg> under data/Feature_Plots folder
+"""
+def featureRelation():
+
+    # use this to plot
+    feature_list = ['MSSubClass', 'Neighborhood', 'MSZoning', 'Street',
+       'OverallQual', 'OverallCond', 'ExterQual', 'ExterCond', 'Foundation',
+       'BsmtQual', 'BsmtCond', 'BsmtExposure', 'BsmtFinType1', 'BsmtFinType2',
+       'Electrical', 'Heating', 'HeatingQC', 'RoofStyle', 'Exterior1st', 'Exterior2nd',
+       'MasVnrType', 'RoofMatl', 'HouseStyle', 'Condition1', 'Condition2', 'Alley',
+       'LotShape', 'LandContour', 'Utilities', 'LotConfig', 'LandSlope', 'BldgType',
+       'CentralAir', 'KitchenQual', 'Functional', 'FireplaceQu', 'GarageType',
+       'GarageFinish', 'GarageQual', 'GarageCond', 'PavedDrive', 'PoolQC', 'Fence',
+       'MiscFeature', 'SaleType', 'SaleCondition']
+
+    # Used to plot a single feature
+    #feature_list = ['MSSubClass']
+
+    data_frame = pd.read_csv('./data/train_noSalesPrice.csv')
+    data_frame.fillna('NA', inplace=True)
+    house_prices = genfromtxt(open('./data/train_scored_y.csv', 'r'), delimiter=',', dtype='f8')[1:]
+
+    for feature_name in feature_list:
+        print '##################### ' + feature_name + ' ###############################'
+        feature_data = data_frame[feature_name]
+        print feature_data.tolist()
+        categories = data_frame[feature_name].tolist()
+        categories = list(set(categories))
+        print categories
+        new_feature_data = []
+        for sample_value in feature_data:
+            for index, value in enumerate(categories):
+                if value == sample_value:
+                    new_feature_data.append(index)
+                    break
+
+        print new_feature_data
+        fig = plt.figure()
+        plt.plot(new_feature_data, house_prices, 'ro')
+        fig.suptitle(feature_name, fontsize=20)
+        plt.ylabel('Sample Price', fontsize=20)
+        plt.xticks(range(len(categories)), categories, rotation=45)
+        # plt.show()
+        plt.savefig('./data/Feature_Plots/' +feature_name+'.jpg')
 
 def hyperparameter_tuning():
     train = genfromtxt(open('./data/train_new.csv', 'r'), delimiter=',', dtype='f8')[1:]
@@ -176,7 +213,7 @@ def hyperparameter_tuning():
     est = GradientBoostingRegressor(n_estimators=1000)
     print est.get_params().keys()
     gs_cv = GridSearchCV(est, params)
-    gs_cv.fit(train_data,house_prices_data)
+    gs_cv.fit(train_data, house_prices_data)
     print gs_cv.best_params_;
 
 
@@ -184,5 +221,5 @@ if __name__ == '__main__':
     # adaboost()
     print "------------------------------------------------"
     # gradboost()
-    hyperparameter_tuning()
-    #featureRelation()
+    # hyperparameter_tuning()
+    featureRelation()
